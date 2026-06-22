@@ -40,7 +40,7 @@ self.addEventListener('message', async (event) => {
 
             // สั่งประมวลผลคำตอบแบบควบคุมโครงสร้างภาษาไทย
             await generator(prompt, {
-                max_new_tokens: 80,
+                max_new_tokens: 100,
                 temperature: 0.6,
                 repetition_penalty: 1.15,
                 do_sample: true,
