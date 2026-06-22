@@ -40,8 +40,8 @@ self.addEventListener('message', async (event) => {
 
             // สั่งประมวลผลคำตอบแบบควบคุมโครงสร้างภาษาไทย
             await generator(prompt, {
-                max_new_tokens: 100,
-                temperature: 0.6,
+                max_new_tokens: 60,
+                temperature: 0.3,
                 repetition_penalty: 1.15,
                 do_sample: true,
                 streamer: streamer 
