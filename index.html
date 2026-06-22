@@ -255,35 +255,32 @@
             return msgDiv;
         }
 
-        window.sendMessage = function() {
-            const text = userInput.value.trim();
-            if (!text) return;
+        // ค้นหาช่วงนี้ใน index.html แล้วแก้ตามนี้เลยครับ
+window.sendMessage = function() {
+    const text = userInput.value.trim();
+    if (!text) return;
 
-            appendMessage(text, 'user');
-            userInput.value = '';
-            
-            userInput.disabled = true;
-            sendBtn.disabled = true;
-            statusText.innerText = "🧠 chat tbd 0.1 กำลังคิด...";
+    appendMessage(text, 'user');
+    userInput.value = '';
+    
+    userInput.disabled = true;
+    sendBtn.disabled = true;
+    statusText.innerText = "🧠 chat tbd 0.1 กำลังคิด...";
 
-            // แสดงจุดไข่ปลาแอนิเมชันรอระหว่างเตรียมประมวลผลคำแรก
-            const typingAnimationHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
-            currentAiMsgDiv = appendMessage(typingAnimationHTML, 'ai', true);
-            chatHistory.push({ role: 'user', content: text });
+    const typingAnimationHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+    currentAiMsgDiv = appendMessage(typingAnimationHTML, 'ai', true);
+    
+    // 💡 ปรับตรงนี้: ไม่เอาประวัติการคุยเก่ามารวม ให้ส่งแค่ระบบกับคำถามล่าสุดพอ แรมจะได้ไม่บวม
+    lastPrompt = `<|im_start|>system\nYou are a helpful AI assistant name chat tbd 0.1. Answer very shortly and concisely in Thai.<|im_end|>\n`;
+    lastPrompt += `<|im_start|>user\n${text}<|im_end|>\n`; 
+    lastPrompt += `<|im_start|>assistant\n`;
 
-            // ป้อนข้อมูลจูนระบบการตอบภาษาไทยให้แก่ Qwen2.5
-            lastPrompt = `<|im_start|>system\nYou are a helpful AI assistant named chat tbd 0.1. You must answer in natural, fluent, and grammatically correct Thai language.<|im_end|>\n`;
-            
-            for (const turn of chatHistory) {
-                lastPrompt += `<|im_start|>${turn.role}\n${turn.content}<|im_end|>\n`;
-            }
-            lastPrompt += `<|im_start|>assistant\n`;
+    aiWorker.postMessage({
+        type: 'generate',
+        prompt: lastPrompt
+    });
+};
 
-            aiWorker.postMessage({
-                type: 'generate',
-                prompt: lastPrompt
-            });
-        };
 
         window.handleKeyPress = function(event) {
             if (event.key === 'Enter' && !userInput.disabled) {
