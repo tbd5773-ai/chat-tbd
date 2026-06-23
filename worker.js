@@ -11,13 +11,15 @@ self.addEventListener('message', async (event) => {
     if (type === 'load') {
         try {
             // 🛠️ เปลี่ยนมาใช้โมเดล SmolLM2-135M ขนาดไฟล์จิ๋วมากประมาณ 90MB รันบน CPU (WASM) แรมเครื่องไม่เต็มแน่นอน
-            generator = await pipeline('text-generation', 'onnx-community/SmolLM2-135M-Instruct', {
-                device: 'wasm', 
-                quantized: true, 
-                progress_callback: (progressData) => {
-                    self.postMessage({ action: 'progress', status: progressData.status, data: progressData });
-                }
-            });
+            // เปลี่ยนใน worker.js เป็นค่าย Xenova (ตัวนี้มีไฟล์อยู่จริง ไม่เอ๋อแน่นอน)
+generator = await pipeline('text-generation', 'Xenova/SmolLM-135M-Instruct', {
+    device: 'wasm', 
+    quantized: true, 
+    progress_callback: (progressData) => {
+        self.postMessage({ action: 'progress', status: progressData.status, data: progressData });
+    }
+});
+
             self.postMessage({ action: 'ready' });
         } catch (error) {
             self.postMessage({ action: 'error', data: error.message });
