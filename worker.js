@@ -10,11 +10,11 @@ self.addEventListener('message', async (event) => {
 
     if (type === 'load') {
         try {
-            // 🌟 กลับมาใช้ Qwen2.5-0.5B ตัวที่ไฟล์ครบถ้วนชัวร์ๆ บนระบบ
-            // 🛠️ แต่เปลี่ยนมาใช้คำสั่ง `dtype: 'q4'` เพื่อบังคับให้โหลดตัวประหยัดแรมขั้นสุดของ v3
+            // 🌟 กลับมาใช้ Qwen2.5-0.5B ตัวที่ไฟล์ระบบแน่นๆ ครบถ้วนชัวร์ๆ 
+            // 🛠️ แต่ใส่คำสั่ง `dtype: 'q4'` เพื่อบังคับโหลดรุ่นประหยัดแรมพิเศษ (ตัวเบาหวิว iPad รันรอด)
             generator = await pipeline('text-generation', 'onnx-community/Qwen2.5-0.5B-Instruct', {
                 device: 'wasm', 
-                dtype: 'q4', // 👈 บังคับใช้ฟอร์แมต 4-bit (ตัวเบา แรมไม่ระเบิดแน่นอน)
+                dtype: 'q4', // 👈 ตัวนี้แหละครับที่จะช่วยเซฟแรมไม่ให้หน้าเว็บวูบดับ
                 progress_callback: (progressData) => {
                     self.postMessage({ action: 'progress', status: progressData.status, data: progressData });
                 }
@@ -38,7 +38,7 @@ self.addEventListener('message', async (event) => {
                 }
             });
 
-            // คุมจำนวนคำตอบให้สั้นกระชับ เพื่อความปลอดภัยของแรมบน iPad
+            // ตั้งค่าให้ตอบสั้น กระชับ แรมนิ่ง
             await generator(prompt, {
                 max_new_tokens: 80,
                 temperature: 0.4,
