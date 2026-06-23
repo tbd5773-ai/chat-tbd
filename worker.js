@@ -11,9 +11,12 @@ self.addEventListener('message', async (event) => {
     if (type === 'load') {
         try {
             // 🛠️ แก้ไขวิกฤตหน้าเว็บรีโหลดบน iPad: ล็อกโหมดไปที่ 'wasm' เพื่อบีบการกินแรมให้ต่ำที่สุด ป้องกัน iOS สั่งปิดหน้าเว็บล่ม
-            generator = await pipeline('text-generation', 'onnx-community/Qwen2.5-0.5B-Instruct', {
-                device: 'wasm', 
-                quantized: true, 
+            // เปลี่ยนจาก Qwen2.5-0.5B-Instruct เป็น Qwen2.5-1.5B-Instruct
+generator = await pipeline('text-generation', 'onnx-community/Qwen2.5-1.5B-Instruct', {
+    device: 'wasm', 
+    quantized: true,
+    // ... โค้ดส่วนอื่นเหมือนเดิม
+
                 progress_callback: (progressData) => {
                     self.postMessage({ action: 'progress', status: progressData.status, data: progressData });
                 }
@@ -40,8 +43,8 @@ self.addEventListener('message', async (event) => {
 
             // สั่งประมวลผลคำตอบแบบควบคุมโครงสร้างภาษาไทย
             await generator(prompt, {
-                max_new_tokens: 60,
-                temperature: 0.3,
+                max_new_tokens: 100,
+                temperature: 0.4,
                 repetition_penalty: 1.15,
                 do_sample: true,
                 streamer: streamer 
