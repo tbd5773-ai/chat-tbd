@@ -271,9 +271,18 @@ window.sendMessage = function() {
     currentAiMsgDiv = appendMessage(typingAnimationHTML, 'ai', true);
     
     // 💡 ปรับตรงนี้: ไม่เอาประวัติการคุยเก่ามารวม ให้ส่งแค่ระบบกับคำถามล่าสุดพอ แรมจะได้ไม่บวม
-    lastPrompt = `<|im_start|>system\nYou are a helpful AI assistant name chat tbd 0.1. Answer very shortly and concisely in Thai.<|im_end|>\n`;
-    lastPrompt += `<|im_start|>user\n${text}<|im_end|>\n`; 
-    lastPrompt += `<|im_start|>assistant\n`;
+    // ปรับโค้ดตรงสร้าง lastPrompt ใน index.html ให้กลับมาดึงประวัติสั้น ๆ
+lastPrompt = `<|im_start|>system\nYou are a helpful AI assistant named chat tbd 0.1. Answer shortly in Thai.<|im_end|>\n`;
+
+// 💡 ดึงเฉพาะประวัติการคุย 2 อันล่าสุด (คำถามล่าสุด + คำตอบล่าสุด) แรมจะได้ไม่พัง
+const shortHistory = chatHistory.slice(-2); 
+for (const turn of shortHistory) {
+    lastPrompt += `<|im_start|>${turn.role}\n${turn.content}<|im_end|>\n`;
+}
+
+lastPrompt += `<|im_start|>user\n${text}<|im_end|>\n`; 
+lastPrompt += `<|im_start|>assistant\n`;
+
 
     aiWorker.postMessage({
         type: 'generate',
