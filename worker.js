@@ -1,4 +1,4 @@
-// ดึงข้อมูลผ่านค่ายหลักเวอร์ชัน 3 ล่าสุด
+// ดึงข้อมูลผ่านค่ายหลักเวอร์ชัน 3
 import { pipeline, env, TextStreamer } from 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.1.0';
 
 env.allowLocalModels = false;
@@ -10,13 +10,10 @@ self.addEventListener('message', async (event) => {
 
     if (type === 'load') {
         try {
-            // 🛠️ แก้ไขวิกฤตหน้าเว็บรีโหลดบน iPad: ล็อกโหมดไปที่ 'wasm' เพื่อบีบการกินแรมให้ต่ำที่สุด ป้องกัน iOS สั่งปิดหน้าเว็บล่ม
-            // เปลี่ยนจาก Qwen2.5-0.5B-Instruct เป็น Qwen2.5-1.5B-Instruct
-generator = await pipeline('text-generation', 'onnx-community/Qwen2.5-1.5B-Instruct', {
-    device: 'wasm', 
-    quantized: true,
-    // ... โค้ดส่วนอื่นเหมือนเดิม
-
+            // 🛠️ เปลี่ยนมาใช้โมเดล SmolLM2-135M ขนาดไฟล์จิ๋วมากประมาณ 90MB รันบน CPU (WASM) แรมเครื่องไม่เต็มแน่นอน
+            generator = await pipeline('text-generation', 'onnx-community/SmolLM2-135M-Instruct', {
+                device: 'wasm', 
+                quantized: true, 
                 progress_callback: (progressData) => {
                     self.postMessage({ action: 'progress', status: progressData.status, data: progressData });
                 }
@@ -33,7 +30,6 @@ generator = await pipeline('text-generation', 'onnx-community/Qwen2.5-1.5B-Instr
         try {
             self.postMessage({ action: 'stream_start' });
 
-            // สร้างสายพานเชื่อมต่ออักษรไหล (Streaming) ไปยังหน้าบ้าน
             const streamer = new TextStreamer(generator.tokenizer, {
                 skip_prompt: true,
                 callback_function: (tokenText) => {
@@ -41,11 +37,11 @@ generator = await pipeline('text-generation', 'onnx-community/Qwen2.5-1.5B-Instr
                 }
             });
 
-            // สั่งประมวลผลคำตอบแบบควบคุมโครงสร้างภาษาไทย
+            // คุมจำนวนการพ่นคำให้อยู่ในเกณฑ์ปลอดภัย สั้น กระชับ แรมไม่ล่ม
             await generator(prompt, {
-                max_new_tokens: 100,
-                temperature: 0.4,
-                repetition_penalty: 1.15,
+                max_new_tokens: 80,
+                temperature: 0.5,
+                repetition_penalty: 1.2,
                 do_sample: true,
                 streamer: streamer 
             });
