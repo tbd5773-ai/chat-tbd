@@ -3,142 +3,293 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>chat tbd 0.2 (iPad Optimized)</title>
+    <title>chat tbd 0.1 (Turbo Streaming + MB Tracker)</title>
+    
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #121214; color: #e1e1e6; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
-        .chat-container { width: 100%; max-width: 600px; background: #1a1a1e; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); display: flex; flex-direction: column; height: 90vh; overflow: hidden; border: 1px solid #29292e; }
-        .chat-header { padding: 15px; background: #202024; border-bottom: 1px solid #29292e; text-align: center; }
-        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-top: 5px; background: #fba94c; color: #121214; }
-        .status-badge.ready { background: #04d361; color: #fff; }
-        .status-badge.error { background: #f75a68; color: #fff; }
-        .chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
-        .message { max-width: 85%; padding: 12px 16px; border-radius: 8px; line-height: 1.5; font-size: 15px; word-break: break-word; }
-        .message.user { background: #00875f; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .message.bot { background: #29292e; color: #e1e1e6; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .input-area { padding: 15px; background: #202024; display: flex; gap: 10px; border-top: 1px solid #29292e; }
-        input { flex: 1; padding: 12px; background: #121214; border: 1px solid #29292e; border-radius: 6px; color: white; font-size: 15px; outline: none; }
-        input:focus { border-color: #00875f; }
-        input:disabled { opacity: 0.5; cursor: not-allowed; }
-        button { padding: 12px 20px; background: #00875f; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
-        button:hover { background: #00b37e; }
-        button:disabled { background: #29292e; color: #7c7c8a; cursor: not-allowed; }
-        .progress-bar-container { width: 100%; background: #121214; height: 6px; display: none; }
-        .progress-bar { width: 0%; height: 100%; background: #00b37e; transition: width 0.1s ease; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #09090b; /* ธีมสีดำลึก */
+            color: #f4f4f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 550px;
+            height: 85vh;
+            background-color: #18181b; /* เทาเข้ม */
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #27272a;
+        }
+        .chat-header {
+            background-color: #27272a;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #ffffff; 
+            border-bottom: 1px solid #3f3f46;
+            letter-spacing: 1px;
+        }
+        #status-container {
+            background-color: #18181b;
+            padding: 10px 20px;
+            font-size: 0.85rem;
+            color: #a1a1aa;
+            border-bottom: 1px solid #27272a;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #27272a;
+            height: 6px;
+            border-radius: 3px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        #progress-fill {
+            width: 0%;
+            height: 100%;
+            background-color: #ffffff; 
+            transition: width 0.1s;
+        }
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .message {
+            max-width: 80%;
+            padding: 12px 18px;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+        .user-msg {
+            background-color: #ffffff; 
+            color: #09090b; 
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+        }
+        .ai-msg {
+            background-color: #27272a; 
+            color: #f4f4f5;
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+            border: 1px solid #3f3f46;
+        }
+        .input-container {
+            display: flex;
+            padding: 15px;
+            background-color: #09090b;
+            border-top: 1px solid #27272a;
+        }
+        #user-input {
+            flex: 1;
+            padding: 14px;
+            border: 1px solid #27272a;
+            border-radius: 12px;
+            background-color: #18181b;
+            color: white;
+            outline: none;
+            font-size: 0.95rem;
+        }
+        #send-btn {
+            background-color: #ffffff; 
+            color: #09090b;
+            border: none;
+            padding: 0 24px;
+            margin-left: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #send-btn:disabled, #user-input:disabled {
+            background-color: #27272a;
+            color: #71717a;
+            cursor: not-allowed;
+        }
+
+        /* アニメーション : จุดไข่ปลากำลังคิดสไตล์มินิมอล */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            height: 20px;
+            padding: 2px 0;
+        }
+        .typing-indicator span {
+            width: 8px;
+            height: 8px;
+            background-color: #a1a1aa;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
     </style>
 </head>
 <body>
 
-<div class="chat-container">
-    <div class="chat-header">
-        <h3>🤖 chat tbd 0.2</h3>
-        <div id="status" class="status-badge">กำลังเตรียมระบบ...</div>
+    <div class="chat-container">
+        <div class="chat-header">🤖 chat tbd 0.1 (Turbo v3)</div>
+        
+        <div id="status-container">
+            <span id="status-text">กำลังตรวจสอบระบบจัดเก็บหน่วยความจำ...</span>
+            <div class="progress-bar"><div id="progress-fill"></div></div>
+        </div>
+
+        <div class="chat-box" id="chat-box">
+            <div class="message ai-msg">ถามได้เลยครับ💬</div>
+        </div>
+        
+        <div class="input-container">
+            <input type="text" id="user-input" placeholder="กรุณารรอโหลดสมองกลสักครู่..." disabled onkeypress="handleKeyPress(event)">
+            <button id="send-btn" onclick="sendMessage()" disabled>ส่ง</button>
+        </div>
     </div>
-    <div class="progress-bar-container" id="progress-container">
-        <div class="progress-bar" id="progress-bar"></div>
-    </div>
-    <div class="chat-box" id="chat-box">
-        <div class="message bot">ระบบสแตนด์บายในโหมดประหยัดแรมสูงสุดเพื่อ iPad แล้วครับ โหลดเสร็จพิมพ์คุยได้เลยครับ 💬</div>
-    </div>
-    <div class="input-area">
-        <input type="text" id="user-input" placeholder="รอโหลดสมองกลสักครู่..." disabled>
-        <button id="send-btn" disabled>ส่ง</button>
-    </div>
-</div>
 
-<script>
-    // 🌟 ใส่ ?v=3 เพื่อทำลายแคชเก่าบน iPad บังคับให้โหลดโค้ดใหม่ล่าสุดจริง ๆ
-    const worker = new Worker('worker.js?v=3', { type: 'module' });
+    <script>
+        const statusText = document.getElementById('status-text');
+        const progressFill = document.getElementById('progress-fill');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const chatBox = document.getElementById('chat-box');
 
-    const statusBadge = document.getElementById('status');
-    const progressContainer = document.getElementById('progress-container');
-    const progressBar = document.getElementById('progress-bar');
-    const chatBox = document.getElementById('chat-box');
-    const userInput = document.getElementById('user-input');
-    const sendBtn = document.getElementById('send-btn');
+        let chatHistory = []; 
+        let currentAiMsgDiv = null;
+        let lastPrompt = "";
+        let isFirstChunk = true; 
 
-    let currentBotMessageDiv = null;
+        // เรียกใช้งาน Web Worker
+        const aiWorker = new Worker('worker.js', { type: 'module' });
+        aiWorker.postMessage({ type: 'load' });
 
-    // สั่งให้ Worker เริ่มโหลดโมเดลทันทีที่เปิดเว็บ
-    worker.postMessage({ type: 'load' });
+        aiWorker.onmessage = function(event) {
+            const { action, status, data } = event.data;
 
-    worker.onmessage = (event) => {
-        const { action, status, data } = event.data;
+            // ตรวจเช็คความคืบหน้าการดาวน์โหลดโมเดล แสดงหน่วยเป็น MB
+            if (action === 'progress') {
+                if (status === 'progress') {
+                    progressFill.style.width = `${data.progress}%`;
+                    
+                    const loadedMB = (data.loaded / 1024 / 1024).toFixed(1);
+                    const totalMB = (data.total / 1024 / 1024).toFixed(1);
+                    const fileName = data.file ? data.file.split('/').pop() : 'ไฟล์โมเดล';
+                    
+                    statusText.innerText = `📦 โหลด: ${fileName} (${loadedMB} / ${totalMB} MB) [${Math.round(data.progress)}%]`;
+                } else if (status === 'ready') {
+                    statusText.innerText = "โหลดไฟล์สำเร็จแล้ว... กำลังตั้งค่าก้อนข้อมูลถัดไป";
+                }
+            } 
+            
+            else if (action === 'ready') {
+                statusText.innerText = "🟢 chat tbd 0.1 พร้อมใช้งาน";
+                progressFill.style.width = "100%";
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.placeholder = "พิมพ์ถามมาได้เลย...";
+            } 
 
-        if (action === 'progress') {
-            progressContainer.style.display = 'block';
-            if (status === 'progress' && data.progress) {
-                statusBadge.innerText = `กำลังดาวน์โหลด: ${Math.round(data.progress)}%`;
-                progressBar.style.width = `${data.progress}%`;
-            } else if (status === 'ready') {
-                statusBadge.innerText = `กำลังติดตั้งโมเดล...`;
+            // ตัวหนังสือเริ่มไหลออกจากคลังสมอง
+            else if (action === 'stream_start') {
+                isFirstChunk = true;
             }
-        }
 
-        if (action === 'ready') {
-            statusBadge.innerText = "● พร้อมใช้งาน (4-bit Mode)";
-            statusBadge.className = "status-badge ready";
-            progressContainer.style.display = 'none';
-            userInput.disabled = false;
-            sendBtn.disabled = false;
-            userInput.placeholder = "พิมพ์ข้อความที่นี่...";
-            userInput.focus();
-        }
-
-        if (action === 'error') {
-            statusBadge.innerText = "❌ เกิดข้อผิดพลาด";
-            statusBadge.className = "status-badge error";
-            appendMessage('bot', `เกิดข้อผิดพลาด: ${data}`);
-            console.error(data);
-        }
-
-        // เริ่มต้นการส่งข้อความแบบพิมพ์ทีละตัว (Streaming)
-        if (action === 'stream_start') {
-            currentBotMessageDiv = appendMessage('bot', '');
-        }
-
-        if (action === 'stream') {
-            if (currentBotMessageDiv) {
-                // ค่อยๆ เพิ่มข้อความเข้าไปในหน้าจอ
-                currentBotMessageDiv.innerText += data;
-                chatBox.scrollTop = chatBox.scrollHeight;
+            // แสดงผลอักษรไหลทีละพยางค์แบบเรียลไทม์
+            else if (action === 'stream') {
+                if (isFirstChunk) {
+                    currentAiMsgDiv.innerHTML = ""; // ลบอนิเมชันจุดไข่ปลาออกทันทีเมื่อตัวหนังสือแรกมาถึง
+                    isFirstChunk = false;
+                }
+                currentAiMsgDiv.innerText += data; 
+                chatBox.scrollTop = chatBox.scrollHeight; 
             }
+            
+            // ประมวลผลคำตอบเสร็จสิ้น
+            else if (action === 'result') {
+                let aiReply = currentAiMsgDiv.innerText;
+                chatHistory.push({ role: 'assistant', content: aiReply });
+
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                statusText.innerText = "🟢 chat tbd 0.1 พร้อมใช้งาน";
+                userInput.focus();
+            } 
+            
+            else if (action === 'error') {
+                statusText.innerText = "❌ เกิดข้อผิดพลาด: " + data;
+                if(currentAiMsgDiv && isFirstChunk) currentAiMsgDiv.innerText = "เกิดข้อผิดพลาดในการดึงข้อมูล";
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+            }
+        };
+
+        function appendMessage(content, sender, isHTML = false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.classList.add('message', sender === 'user' ? 'user-msg' : 'ai-msg');
+            if (isHTML) {
+                msgDiv.innerHTML = content;
+            } else {
+                msgDiv.innerText = content;
+            }
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return msgDiv;
         }
 
-        if (action === 'result') {
-            currentBotMessageDiv = null;
-            userInput.disabled = false;
-            sendBtn.disabled = false;
-            userInput.focus();
-        }
-    };
+        window.sendMessage = function() {
+            const text = userInput.value.trim();
+            if (!text) return;
 
-    function appendMessage(sender, text) {
-        const msg = document.createElement('div');
-        msg.className = `message ${sender}`;
-        msg.innerText = text;
-        chatBox.appendChild(msg);
-        chatBox.scrollTop = chatBox.scrollHeight;
-        return msg;
-    }
+            appendMessage(text, 'user');
+            userInput.value = '';
+            
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            statusText.innerText = "🧠 chat tbd 0.1 กำลังคิด...";
 
-    function handleSend() {
-        const text = userInput.value.trim();
-        if (!text) return;
+            // แสดงจุดไข่ปลาแอนิเมชันรอระหว่างเตรียมประมวลผลคำแรก
+            const typingAnimationHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+            currentAiMsgDiv = appendMessage(typingAnimationHTML, 'ai', true);
+            chatHistory.push({ role: 'user', content: text });
 
-        appendMessage('user', text);
-        userInput.value = '';
-        userInput.disabled = true;
-        sendBtn.disabled = true;
+            // ป้อนข้อมูลจูนระบบการตอบภาษาไทยให้แก่ Qwen2.5
+            lastPrompt = `<|im_start|>system\nYou are a helpful AI assistant named chat tbd 0.1. You must answer in natural, fluent, and grammatically correct Thai language.<|im_end|>\n`;
+            
+            for (const turn of chatHistory) {
+                lastPrompt += `<|im_start|>${turn.role}\n${turn.content}<|im_end|>\n`;
+            }
+            lastPrompt += `<|im_start|>assistant\n`;
 
-        // ส่งข้อความไปให้สมองกลคิดคำตอบ
-        worker.postMessage({ type: 'generate', prompt: text });
-    }
+            aiWorker.postMessage({
+                type: 'generate',
+                prompt: lastPrompt
+            });
+        };
 
-    sendBtn.addEventListener('click', handleSend);
-    userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSend();
-    });
-</script>
+        window.handleKeyPress = function(event) {
+            if (event.key === 'Enter' && !userInput.disabled) {
+                window.sendMessage();
+            }
+        };
+    </script>
 </body>
 </html>
