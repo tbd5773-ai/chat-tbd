@@ -10,16 +10,15 @@ self.addEventListener('message', async (event) => {
 
     if (type === 'load') {
         try {
-            // 🛠️ เปลี่ยนมาใช้โมเดล SmolLM2-135M ขนาดไฟล์จิ๋วมากประมาณ 90MB รันบน CPU (WASM) แรมเครื่องไม่เต็มแน่นอน
-            // เปลี่ยนใน worker.js เป็นค่าย Xenova (ตัวนี้มีไฟล์อยู่จริง ไม่เอ๋อแน่นอน)
-generator = await pipeline('text-generation', 'Xenova/SmolLM-135M-Instruct', {
-    device: 'wasm', 
-    quantized: true, 
-    progress_callback: (progressData) => {
-        self.postMessage({ action: 'progress', status: progressData.status, data: progressData });
-    }
-});
-
+            // 🌟 กลับมาใช้ Qwen2.5-0.5B ตัวที่ไฟล์ครบถ้วนชัวร์ๆ บนระบบ
+            // 🛠️ แต่เปลี่ยนมาใช้คำสั่ง `dtype: 'q4'` เพื่อบังคับให้โหลดตัวประหยัดแรมขั้นสุดของ v3
+            generator = await pipeline('text-generation', 'onnx-community/Qwen2.5-0.5B-Instruct', {
+                device: 'wasm', 
+                dtype: 'q4', // 👈 บังคับใช้ฟอร์แมต 4-bit (ตัวเบา แรมไม่ระเบิดแน่นอน)
+                progress_callback: (progressData) => {
+                    self.postMessage({ action: 'progress', status: progressData.status, data: progressData });
+                }
+            });
             self.postMessage({ action: 'ready' });
         } catch (error) {
             self.postMessage({ action: 'error', data: error.message });
@@ -39,11 +38,11 @@ generator = await pipeline('text-generation', 'Xenova/SmolLM-135M-Instruct', {
                 }
             });
 
-            // คุมจำนวนการพ่นคำให้อยู่ในเกณฑ์ปลอดภัย สั้น กระชับ แรมไม่ล่ม
+            // คุมจำนวนคำตอบให้สั้นกระชับ เพื่อความปลอดภัยของแรมบน iPad
             await generator(prompt, {
                 max_new_tokens: 80,
-                temperature: 0.5,
-                repetition_penalty: 1.2,
+                temperature: 0.4,
+                repetition_penalty: 1.15,
                 do_sample: true,
                 streamer: streamer 
             });
